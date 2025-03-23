@@ -30,18 +30,20 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Docker Login (Optional)
-        if: ${{ env.DOCKERTOKEN != '' }}
-        run: echo "${{ secrets.DOCKERTOKEN }}" | docker login -u "bhavyadhiman" --password-stdin
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Push Docker Image
         run: |
           docker buildx build \
             --platform linux/amd64,linux/arm64 \
-            --push \
-            -t bhavyadhiman/fastapi-app:latest .
+            -t bhavyadhiman/fastapi-app:latest . \
+            --push
